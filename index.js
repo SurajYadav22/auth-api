@@ -58,7 +58,7 @@ const User = mongoose.model('User', userSchema);
 
 // Middleware for decoding JWT and setting req.user
 const authenticateJWT = async (req, res, next) => {
-    const token = req.header('Authorization').split(" ")[1];
+    const token = req.header('Authorization')?.split(" ")[1];
 
 
 
@@ -220,6 +220,19 @@ app.patch('/verify-user/:userId', authenticateJWT, authorizeAdmin, async (req, r
         res.status(500).json({ error: error.message });
     }
 });
+
+
+// Get all users route
+app.get('/get-all-users', authenticateJWT, authorizeAdmin, async (req, res) => {
+    try {
+        const allUsers = await User.find();
+        res.json(allUsers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 
 
 app.listen(PORT, () => {
