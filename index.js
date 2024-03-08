@@ -4,13 +4,14 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 
 const app = express();
 const PORT = 5000;
 
 
-
+app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json());
 
 
