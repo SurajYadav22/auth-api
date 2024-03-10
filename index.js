@@ -234,6 +234,28 @@ app.get('/get-all-users', authenticateJWT, authorizeAdmin, async (req, res) => {
 });
 
 
+// Get single user by userId route
+app.get('/get-user/:userId', authenticateJWT, authorizeAdmin, async (req, res) => {
+
+
+    try {
+        const { userId } = req.params;
+
+        // Find the user to be verified by their ID
+        const userDetails = await User.findById(userId);
+
+        if (!userDetails) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ userDetails, message: 'Success' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 
 
 app.listen(PORT, () => {
