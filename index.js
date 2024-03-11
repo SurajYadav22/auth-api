@@ -271,7 +271,7 @@ app.get('/get-all-users', authenticateJWT, authorizeRole, async (req, res) => {
 
 
 // Get single user by userId route
-app.get('/get-user/:userId', authenticateJWT, authorizeAdmin, async (req, res) => {
+app.get('/get-user/:userId', authenticateJWT, async (req, res) => {
 
 
     try {
