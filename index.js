@@ -99,6 +99,31 @@ const authorizeAdmin = async (req, res, next) => {
 
 
 
+const authorizeRole = async (req, res, next) => {
+    const requestingUserId = req.user.userId;
+
+    try {
+        const user = await User.findById(requestingUserId);
+
+        if (!user) {
+            return res.status(403).json({ error: 'Permission denied. User not found.' });
+        }
+
+        // if (user.role !== 'admin') {
+        //     return res.status(403).json({ error: 'Permission denied. Only admin users can perform this action.' });
+        // }
+
+        req.user = user;
+
+        next(); // Continue to the next middleware or route handler
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
 
 
 
@@ -224,14 +249,25 @@ app.patch('/verify-user/:userId', authenticateJWT, authorizeAdmin, async (req, r
 
 
 // Get all users route
-app.get('/get-all-users', authenticateJWT, authorizeAdmin, async (req, res) => {
+app.get('/get-all-users', authenticateJWT, authorizeRole, async (req, res) => {
     try {
-        const allUsers = await User.find();
-        res.json(allUsers);
+        const { role } = req.user; // Assuming user role information is stored in req.user
+
+        if (role === 'admin') {
+            // If the user is an admin, send all user data
+            const allUsers = await User.find();
+            res.json(allUsers);
+        } else {
+            // For other roles, send only the particular user's data
+            const userId = req?.user?._id; // Assuming user ID information is stored in req.user.id
+            const allUsers = await User.findById(userId);
+            res.json([allUsers]);
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 // Get single user by userId route
